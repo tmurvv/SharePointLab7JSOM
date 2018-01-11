@@ -1,0 +1,24 @@
+<DOCTYPE! html>
+
+<HTML>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://hogwarts/SiteAssets/ExportColumnsReboot.js"></script>
+</head>
+
+<body onload="getGroups();">
+	<div>Please enter output file name example: myColumnSchemas.txt</div>
+	</br>
+	<div><input type="text" id="userOutputFile" size="75px"></div>
+	</br>
+	<button type="button" id="submit" onclick="checkFile();">Submit</button>
+	<div id="messageToUser"></div>
+	</br>
+	<div>Select Column Group:</div>
+	</br>
+	<div><select id="selectGroup" onchange="enableExtractButton();"></select></div>
+	</br>
+	<div><button id="extractButton" type="button" style="visibility:hidden" onclick="writeFile();">Extract Column Schema</button></div>
+</body>
+
+</HTML>
