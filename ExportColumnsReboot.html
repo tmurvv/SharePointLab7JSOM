@@ -11,14 +11,16 @@
 	</br>
 	<div><input type="text" id="userOutputFile" size="75px"></div>
 	</br>
-	<button type="button" id="submit" onclick="checkFile();">Submit</button>
+	<button type="button" id="submit" onclick="checkFile();">Check for duplicate file name</button>
+	</br>
 	<div id="messageToUser"></div>
 	</br>
-	<div>Select Column Group:</div>
+	<div id="selectGroupHeader" style="visibility:hidden">Select Column Group:</div>
 	</br>
-	<div><select id="selectGroup" onchange="enableExtractButton();"></select></div>
+	<div><select id="selectGroup" style="visibility:hidden" onchange="enableExtractButton();"></select></div>
 	</br>
 	<div><button id="extractButton" type="button" style="visibility:hidden" onclick="writeFile();">Extract Column Schema</button></div>
+	</br><div id="messageToUser" style="visibility:hidden"></div>
 </body>
 
 </HTML>

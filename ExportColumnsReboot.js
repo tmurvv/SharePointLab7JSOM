@@ -3,7 +3,7 @@ function enableExtractButton() {
 }
 
 function getGroups() {
-	debugger;		
+		
 	var context = new SP.ClientContext.get_current();
 	var website = context.get_web();
 	var allWebFields = website.get_fields();
@@ -45,8 +45,7 @@ function checkFile() {
 	var userOutputFile = document.getElementById("userOutputFile").value;
     
 	var listTitle = 'Site Assets';
-	var fileUrl  = 'http://hogwarts/siteassets/' + userOutputFile;
-	//var fileUrl  = 'http://hogwarts/siteassets/ExportColumnsReBoot.js';
+	var fileUrl  = _spPageContextInfo.webAbsoluteUrl + "/siteassets/" + userOutputFile;
 
 	
 	var ctx = SP.ClientContext.get_current();
@@ -64,8 +63,10 @@ function checkFile() {
 		}
 		else {
 			if (userOutputFile.length > 0) {
-			alert("File Name Ok.");
-			//document.getElementById("messageToUser").innerHTML = "File name is ok.";
+			document.getElementById("selectGroupHeader").style.visibility="visible";
+			document.getElementById("selectGroup").style.visibility="visible";
+			document.getElementById("messageToUser").innerHTML="File name OK";
+			
 			}
 		}		
 	}
@@ -77,20 +78,24 @@ function checkFile() {
 	}		
 }
 
-function fileContentFunc(userChoiceGroup) {
-		
+function writeFile() {
+	
 	var context = new SP.ClientContext.get_current();
 	var website = context.get_web();	
 	var rootWeb = context.get_site().get_rootWeb();
 	var webFields = rootWeb.get_fields();
 	var targetList = website.get_lists().getByTitle("Site Assets");
-	//alert("fileContent function " + userChoiceGroup);
+	var userGroupChoiceIndex = document.getElementById("selectGroup").selectedIndex;
+	var userGroupChoiceText = document.getElementById("selectGroup").options[userGroupChoiceIndex].text;
+	var userOutputFile = document.getElementById("userOutputFile").value;
+	var fileContent = "";
 	
+	//add schemas to file content
 	context.load(webFields);
-	context.executeQueryAsync(successFileContent, failFileContent);
+	context.executeQueryAsync(successWriteFile, failWriteFile);
 	
-	function successFileContent() {
-		alert("successFileContent");
+	function successWriteFile() {
+		
 		var fieldEnumerator = webFields.getEnumerator();
 		//var allXmlSchemas =  '<Field ID="{e08400f3-c779-4ed2-a18c-ab7f34caa318}" ColName="tp_AppEditor" RowOrdinal="0" ReadOnly="TRUE" Hidden="FALSE" Type="Lookup" List="AppPrincipals" Name="AppEditor" DisplayName="App Modified By" ShowField="Title" JoinColName="Id" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="AppEditor" FromBaseType="TRUE" /><Field ID="{6bfaba20-36bf-44b5-a1b2-eb6346d49716}" ColName="tp_AppAuthor" RowOrdinal="0" ReadOnly="TRUE" Hidden="FALSE" Type="Lookup" List="AppPrincipals" Name="AppAuthor" DisplayName="App Created By" ShowField="Title" JoinColName="Id" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="AppAuthor" FromBaseType="TRUE" />';
 		var fileContent ="";
@@ -104,41 +109,41 @@ function fileContentFunc(userChoiceGroup) {
 				fileContent += schemaXml;
 			}					
 		}
-		alert("successfilecontent " + fileContent);	
-	}
-	
-	function failFileContent() {
-		alert("failFileContent");
-	}	
-}
-
-function writeFile() {
-
-	var context = new SP.ClientContext.get_current();
-	var website = context.get_web();	
-	var rootWeb = context.get_site().get_rootWeb();
-	var webFields = rootWeb.get_fields();
-	var targetList = website.get_lists().getByTitle("Site Assets");
-	var userGroupChoiceIndex = document.getElementById("selectGroup").selectedIndex;
-	var userGroupChoiceText = document.getElementById("selectGroup").options[userGroupChoiceIndex].text;
+		alert("The following content will be written:\n " + fileContent);
 			
-	var fileContent = "";
-	fileContent = fileContentFunc(userGroupChoiceText);
-	var fileCreateInfo = new SP.FileCreationInformation();
-	alert("writeFile " + fileContent);
-	fileCreateInfo.set_url("http://quidditch/siteassets/" + userGroupChoiceText);
-
-	var newFile = targetList.get_rootFolder().get_files().add(fileCreateInfo);
+		//alert("SuccessWriteFile fileContent" + fileContent);
 	
-	context.load(newFile);
-	context.executeQueryAsync(successWriteFile, failWriteFile);	
-					
-	function successWriteFile() {
-		alert('Your file has been successfully written to the site assets folder.');
+		//add new file
+		var fileCreateInfo = new SP.FileCreationInformation();
+			
+		fileCreateInfo.set_url(_spPageContextInfo.webAbsoluteUrl + "/siteassets/"  + userOutputFile);
+		fileCreateInfo.set_content(new SP.Base64EncodedByteArray());
+				
+		for (var i = 0; i < fileContent.length; i++) {
+			
+			fileCreateInfo.get_content().append(fileContent.charCodeAt(i));
+		}
 		
+		var newFile = targetList.get_rootFolder().get_files().add(fileCreateInfo);
+		var newFile = targetList.get_rootFolder().get_files().add(fileCreateInfo);
+		
+		debugger;
+		context.load(newFile);
+		context.executeQueryAsync(successSuccessWriteFile, failSuccessWriteFile);	
+					
+		function successSuccessWriteFile() {
+			debugger;
+			document.getElementById("messageToUser").innerHTML="File successfully written to " + _spPageContextInfo.webAbsoluteUrl + "/siteassets/" + userOutputFile;
+		}
+		
+		function failSuccessWriteFile() {
+			debugger;
+			alert('FailsuccessWriteFile WriteFile failed. Please close your browser and try again.');
+		}
 	}
 	
 	function failWriteFile() {
-		alert('Check the Site Assets folder for your file.');
+		debugger;
+		//alert('failWriteFile Check the Site Assets folder for your file.');
 	}
 }
